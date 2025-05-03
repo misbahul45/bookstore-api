@@ -31,6 +31,7 @@ class BookRouter {
             const { page,limit }=req.query;
             const result=await BookController.getBooks(page, limit);
             res.status(result.status).json(result);
+            httpLogger.info(`User ${req.user.username} viewed books`);
         } catch (error) {
             next(error);
         }
@@ -41,6 +42,7 @@ class BookRouter {
             const { id }=req.params;
             const result=await BookController.getBookById(id);
             res.status(result.status).json(result); 
+            httpLogger.info(`User ${req.user.username} viewed book ${id}`);
         } catch (error) {
             next(error);
         }

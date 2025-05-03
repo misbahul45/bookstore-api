@@ -9,5 +9,4 @@ export class BookSchema {
     image: z.string().min(1, { message: "Image is required" }).url({ message: "Image must be a valid URL" }),
     rating: z.number().min(1, { message: "Rating is required" }),
   });
-
 }

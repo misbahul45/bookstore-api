@@ -3,6 +3,7 @@ import { AuthController } from "../controller/AuthController.js";
 import { authenticateUser } from "../middleware/authHandler.js";
 import { users } from "../db/schema.js";
 import db from "../db/index.js";
+import { httpLogger } from "../lib/winston.js";
 
 
 class AuthRouter {
@@ -29,6 +30,9 @@ class AuthRouter {
             maxAge: 30 * 24 * 60 * 60 * 1000, 
           })
           res.status(200).json(result);
+
+          httpLogger.info(`User ${result.data.user.username} logged in`);
+
         } catch (error) {
           next(error);
         }
@@ -60,6 +64,8 @@ class AuthRouter {
            maxAge: 30 * 24 * 60 * 60 * 1000,
          });
         res.status(200).json(result);
+
+        httpLogger.info(`User ${result.data.user.username} refreshed token`);
       } catch (error) {
         next(error);
       }

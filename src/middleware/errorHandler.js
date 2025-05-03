@@ -1,3 +1,5 @@
+import { httpLogger } from "../lib/winston.js";
+
 export class AppError extends Error {
     constructor(message, statusCode, err = null) {
         super(message);
@@ -16,4 +18,7 @@ export const errorHandler = (err, req, res, next) => {
             errors: err.err,
         })
     });
+
+    httpLogger.error(err);
+    
 };

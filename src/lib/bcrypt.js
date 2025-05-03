@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-export function  hashText(text) {
+export function hashText(text) {
     const saltRounds = 10;
     const hashedText = bcrypt.hashSync(text, saltRounds);
     return hashedText;
