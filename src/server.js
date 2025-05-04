@@ -4,13 +4,13 @@ import AuthRouter from './routers/AuthRouter.js';
 import BookRouter from './routers/BookRouter.js';
 import { AppError, errorHandler } from './middleware/errorHandler.js';
 import cookieParser from 'cookie-parser';
-import fileUpload from 'express-fileupload';
 import UploadRouter from './routers/UploadRouter.js';
 import { setupCors } from './lib/utils.js';
 import notification from './sockets/NotificationSocket.js';
 import http from 'http';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './lib/swagger.js';
+import fileUpload from 'express-fileupload';
 
 
 const app = express();
@@ -21,7 +21,7 @@ app.use(setupCors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(fileUpload());
+app.use(fileUpload())
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //socket service
