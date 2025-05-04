@@ -6,7 +6,7 @@ export const generateJwtToken = async (userId, existingRefreshToken = null) => {
     const accessToken = jwt.sign(
         { userId, iat: Math.floor(Date.now() / 1000) }, 
         process.env.JWT_ACCESS_SECRET, 
-        { expiresIn: '15m' }
+        { expiresIn: '30d' }
     );
 
     let refreshToken = existingRefreshToken; 
@@ -29,4 +29,16 @@ export const setupCors = () => {
         methods: ['GET', 'POST', 'PATCH', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
     });
+}
+
+
+export const removeSensitiveData=(data)=>{
+    if(Array.isArray(data)){
+        return data.map((item)=>{
+            const {password, otp, refreshToken, otpExpiresAt,  ...rest}=item;
+            return rest;
+        })
+    }
+    const {password, otp, refreshToken, otpExpiresAt,  ...rest}=data;
+    return rest;
 }

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export class BookSchema {
-  static  create=z.object({
+  static create=z.object({
     title: z.string().min(1, { message: "Title is required" }),
     userId: z.string().min(1, { message: "User ID is required" }),
     author: z.string().min(1, { message: "Author is required" }),
