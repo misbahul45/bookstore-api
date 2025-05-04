@@ -19,6 +19,6 @@ export const errorHandler = (err, req, res, next) => {
         })
     });
 
-    httpLogger.error(err);
+    httpLogger.error(`Error: ${err.message}, Status Code: ${statusCode}, Stack: ${err.stack}`);
     
 };

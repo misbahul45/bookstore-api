@@ -9,6 +9,9 @@ import UploadRouter from './routers/UploadRouter.js';
 import { setupCors } from './lib/utils.js';
 import notification from './sockets/NotificationSocket.js';
 import http from 'http';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './lib/swagger.js';
+
 
 const app = express();
 const server = http.createServer(app);
@@ -19,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(fileUpload());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //socket service
 notification.initialize(server);
@@ -41,6 +45,7 @@ app.use((req, _, next) => {
   }
 })
 app.use(errorHandler)
+
 
 server.listen(PORT,() => {
   console.log(`Server is running on port ${PORT}`);

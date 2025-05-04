@@ -6,7 +6,7 @@ export const generateJwtToken = async (userId, existingRefreshToken = null) => {
     const accessToken = jwt.sign(
         { userId, iat: Math.floor(Date.now() / 1000) }, 
         process.env.JWT_ACCESS_SECRET, 
-        { expiresIn: '1h' }
+        { expiresIn: '15m' }
     );
 
     let refreshToken = existingRefreshToken; 

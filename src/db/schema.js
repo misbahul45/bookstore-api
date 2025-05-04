@@ -1,5 +1,5 @@
-import { sql } from 'drizzle-orm';
-import { mysqlTable, varchar, text, timestamp, tinyint, int, boolean, index, float } from 'drizzle-orm/mysql-core';
+import { sql, relations } from 'drizzle-orm';
+import { mysqlTable, varchar, text, timestamp, tinyint, int, boolean, index, float, } from 'drizzle-orm/mysql-core';
 
 // ✅ Users Table
 export const users = mysqlTable('users_table', {
@@ -8,9 +8,13 @@ export const users = mysqlTable('users_table', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   password: varchar('password', { length: 255 }).notNull(),
   avatar: varchar('avatar', { length: 255 }),
+  avatarId: varchar('avatar_id', { length: 255 }), // Added Cloudinary public ID for avatar
   refreshToken: varchar('refresh_token', { length: 512 }),
   role: varchar('role', { length: 20 }).notNull().default('user'), // 'user', 'admin', 'seller'
-  isActive: boolean('is_active').notNull().default(true),
+  otp: varchar('otp', { length: 255 }), // One Time Password for email verification
+  otpExpiresAt: timestamp('otp_expires_at'), // Expiration time for OTP
+  isVerified: boolean('is_verified').notNull().default(false),
+  isActive: boolean('is_active').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
 });
@@ -24,7 +28,6 @@ export const categories = mysqlTable('categories_table', {
   updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
 });
 
-// ✅ Books Table
 export const books = mysqlTable('books_table', {
   id: varchar('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
   userId: varchar('user_id', { length: 36 }).notNull()
@@ -35,13 +38,14 @@ export const books = mysqlTable('books_table', {
   author: varchar('author', { length: 255 }).notNull(),
   caption: text('caption'),
   description: text('description'),
-  image: varchar('image', { length: 255 }),
+  cover: varchar('image', { length: 255 }),
+  coverId: varchar('cover_id', { length: 255 }), // Added Cloudinary public ID for cover
   fileUrl: varchar('file_url', { length: 255 }), // For digital books
+  fileId: varchar('file_id', { length: 255 }), // Added Cloudinary public ID for digital book file
   price: int('price').notNull(),
   stock: int('stock').notNull().default(0),
   type: varchar('type', { length: 20 }).notNull(), // 'digital' | 'physical'
   isPublished: boolean('is_published').notNull().default(true),
-  averageRating: float('average_rating'), // Calculated from reviews
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
 }, (table) => {
@@ -51,6 +55,39 @@ export const books = mysqlTable('books_table', {
     categoryIdx: index('category_idx').on(table.categoryId),
   }
 });
+
+// Tabel untuk menyimpan banyak gambar/foto untuk setiap buku
+export const bookImages = mysqlTable('book_images', {
+  id: varchar('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
+  bookId: varchar('book_id', { length: 36 }).notNull()
+    .references(() => books.id, { onDelete: "cascade" }), // Hapus gambar ketika buku dihapus
+  imageUrl: varchar('image_url', { length: 255 }).notNull(),
+  imageId: varchar('image_id', { length: 255 }).notNull(), // Added Cloudinary public ID for image
+  caption: varchar('caption', { length: 255 }),
+  isFeatured: boolean('is_featured').default(false), // Menandai gambar unggulan/showcase
+  sortOrder: int('sort_order').default(0), // Urutan tampilan
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
+}, (table) => {
+  return {
+    bookIdIdx: index('book_id_idx').on(table.bookId),
+    sortOrderIdx: index('sort_order_idx').on(table.sortOrder),
+  }
+});
+
+// Definisi relasi one-to-many antara books dan bookImages
+export const booksRelations = relations(books, ({ many }) => ({
+  images: many(bookImages)
+}));
+
+// Definisi relasi many-to-one antara bookImages dan books
+export const bookImagesRelations = relations(bookImages, ({ one }) => ({
+  book: one(books, {
+    fields: [bookImages.bookId],
+    references: [books.id]
+  })
+}));
+
 
 // ✅ Reviews Table
 export const reviews = mysqlTable('reviews_table', {
@@ -128,6 +165,7 @@ export const orderItems = mysqlTable('order_items_table', {
   price: int('price').notNull(), // Snapshot harga saat order
   type: varchar('type', { length: 20 }).notNull(), // 'digital' | 'physical'
   downloadUrl: varchar('download_url', { length: 255 }), // Untuk buku digital
+  downloadId: varchar('download_id', { length: 255 }), // Added Cloudinary public ID for downloadable file
   downloadCount: int('download_count').default(0), // Jumlah unduhan untuk buku digital
   createdAt: timestamp('created_at').notNull().defaultNow(),
 }, (table) => {
@@ -249,6 +287,7 @@ export const chatMessages = mysqlTable('chat_messages_table', {
   message: text('message').notNull(),
   isRead: boolean('is_read').notNull().default(false),
   attachmentUrl: varchar('attachment_url', { length: 255 }), // File yang dikirim jika ada
+  attachmentId: varchar('attachment_id', { length: 255 }), // Added Cloudinary public ID for attachment
   attachmentType: varchar('attachment_type', { length: 50 }), // 'image', 'pdf', etc.
   createdAt: timestamp('created_at').notNull().defaultNow(),
 }, (table) => {
@@ -258,7 +297,9 @@ export const chatMessages = mysqlTable('chat_messages_table', {
     receiverIdx: index('receiver_idx').on(table.receiverId),
     createdAtIdx: index('created_at_idx').on(table.createdAt),
   }
-});// ✅ Discounts Table
+});
+
+// ✅ Discounts Table
 export const discounts = mysqlTable('discounts_table', {
   id: varchar('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
   code: varchar('code', { length: 50 }).notNull().unique(), // Discount code

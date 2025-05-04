@@ -16,4 +16,19 @@ export class AuthSchema {
         email:z.string().email("Invalid email"),
         refreshToken:z.string().min(1, "Refresh token is required"),
     })
+
+    static verifyOtp=z.object({
+        email:z.string().email("Invalid email"),
+        otp:z.string().length(6, "Invalid OTP"),
+    })
+
+    static forgotPassword=z.object({
+        email:z.string().email("Invalid email"),
+    })
+
+    static resetPassword=z.object({
+        email:z.string().email("Invalid email"),
+        password:z.string().min(8, "Password must be at least 8 characters long"),
+    })
+ 
 }

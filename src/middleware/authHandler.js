@@ -15,7 +15,6 @@ export const authenticateUser = async (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-
     try {
       const user = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
       req.user = user;
@@ -44,7 +43,6 @@ export const authenticateUser = async (req, res, next) => {
         req.accessToken = accessToken;
         return next();
       }
-      console.log(error);
       throw new AppError("Unauthorized", 401);
     }
   } catch (error) {
