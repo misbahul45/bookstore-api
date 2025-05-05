@@ -27,7 +27,6 @@ class NotificationsService{
 
      async all(userId, take=10, page=1){
         try {
-            // Hapus notifikasi yang sudah dibaca dan melewati masa retensi
             await db.delete(notifications)
             .where(
                and(

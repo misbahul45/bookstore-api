@@ -3,14 +3,13 @@ import db from "../db/index.js";
 import { users } from "../db/schema.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { UsersSchema } from "../schema/UsersSchema.js";
+import { hashText } from "../lib/bcrypt.js";
 
 export class UsersController{
     static async createUser(data) {
         try {
-            const isValid=await UsersSchema.create.parseAsync(data);
-            if(!isValid.success){
-                throw new AppError("Invalid data", 400);
-            }
+            await UsersSchema.create.parseAsync(data);
+
             await db.insert(users).values({
                 ...data,
                 isActive: true,
@@ -18,7 +17,7 @@ export class UsersController{
             })
             
             return { 
-                status: 200,
+                status: 201,
                 message: 'User created successfully' 
             };
         } catch (error) {
@@ -28,10 +27,7 @@ export class UsersController{
 
     static async getUsers(page, limit) {
         try {
-            const parsedData = await UsersSchema.getUsers.safeParseAsync({ page, limit });
-            if (!parsedData.success) {
-                throw new AppError(parsedData.error.errors[0].message, 400);
-            }
+             await UsersSchema.getUsers.safeParseAsync({ page, limit });
 
             const totalUsersResult = await db.select({ count:count() }).from(users);
 
@@ -58,10 +54,8 @@ export class UsersController{
 
     static async getUserById(id){
         try{
-            const parsedData = await UsersSchema.getUserById.safeParseAsync({ id });
-            if (!parsedData.success) {
-                throw new AppError(parsedData.error.errors[0].message, 400);
-            }
+            await UsersSchema.getUserById.safeParseAsync({ id });
+            
             const user=await db.select().from(users).where({id});
             if(user.length===0){
                 throw new AppError("User not found", 404);
@@ -71,6 +65,44 @@ export class UsersController{
                 status: 200,
                 message: 'User retrieved successfully',
                 data: user[0]
+            };
+        }catch(error){
+            throw error;
+        }
+    }
+
+    static async updateUser(id, data){
+        try{
+            await UsersSchema.updateUser.safeParseAsync({ ...data });
+
+            data.password = hashText(data.password);
+            const user=await db.update(users).set(data).where({id});
+            if(user.length===0){
+                throw new AppError("User not found", 404);
+            }
+            
+            return {
+                status: 204,
+                message: 'User updated successfully',
+            };
+        }catch(error){
+            throw error;
+        }
+    }
+
+    static async deleteUser(id){
+        try{
+            await UsersSchema.deleteUser.safeParseAsync({ id });
+
+            
+            const user=await db.delete(users).where({id});
+            if(user.length===0){
+                throw new AppError("User not found", 404);
+            }
+            
+            return {
+                status: 204,
+                message: 'User deleted successfully',
             };
         }catch(error){
             throw error;

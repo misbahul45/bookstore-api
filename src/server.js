@@ -39,6 +39,18 @@ app.use('/api/users', UsersRouter);
 app.use('/api/books', BookRouter);
 app.use('/api/uploads', UploadRouter);
 
+
+app.use((req, res, next) => {
+  const start = process.hrtime();
+  res.on('finish', () => {
+    const [s, ns] = process.hrtime(start);
+    const ms = (s * 1000 + ns / 1e6).toFixed(2);
+    console.log(`${req.method} ${req.url} - ${ms}ms`);
+  });
+  next();
+});
+
+
 app.use((req, _, next) => {
   try {
     throw new AppError(`not found router-${req.originalUrl}`, 404);
@@ -52,3 +64,6 @@ app.use(errorHandler)
 server.listen(PORT,() => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+export default app;

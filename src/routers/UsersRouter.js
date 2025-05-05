@@ -16,7 +16,7 @@ export class UsersRouter {
         this.router.post('/', authenticateUser, authenticateAdmin, this.createUser);
         this.router.get('/', this.getUsers);
         this.router.get('/:id', this.getUserById);
-        this.router.patch('/:id', authenticateUser, this.updateUser);
+        this.router.patch('/:id', this.updateUser);
         this.router.delete('/:id', authenticateUser, this.deleteUser);
     }
 

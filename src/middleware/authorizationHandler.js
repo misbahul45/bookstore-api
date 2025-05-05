@@ -1,12 +1,12 @@
 import db from "../db/index.js";
 import { users } from "../db/schema.js";
 import { AppError } from "./errorHandler.js";
-import jwt from "jsonwebtoken";
 import 'dotenv/config';
 
 export const authenticateSeller = async (req, res, next) => {
     try {
-         const user= req.user;
+        const { userId }=req.user;
+        const user = await db.select().from(users).where({ id: userId }).get();
         if (!user) {
             throw new AppError("Unauthorized", 401);
         }
@@ -22,7 +22,10 @@ export const authenticateSeller = async (req, res, next) => {
 
 export const authenticateAdmin = async (req, res, next) => {
     try {
-        const user= req.user;
+        const { userId }=req.user;
+        const [user] = await db.select().from(users).where({ id: userId });
+
+
         if (!user) {
             throw new AppError("Unauthorized", 401);
         }
