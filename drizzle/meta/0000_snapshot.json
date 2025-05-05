@@ -1,9 +1,124 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "2be65dfa-c65b-46cb-ade5-43a55de4cec0",
+  "id": "a71d922a-fdf5-4226-8ef0-ffde7b1c9756",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "book_images": {
+      "name": "book_images",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(UUID())"
+        },
+        "book_id": {
+          "name": "book_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "image_id": {
+          "name": "image_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "caption": {
+          "name": "caption",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_featured": {
+          "name": "is_featured",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
+        }
+      },
+      "indexes": {
+        "book_id_idx": {
+          "name": "book_id_idx",
+          "columns": [
+            "book_id"
+          ],
+          "isUnique": false
+        },
+        "sort_order_idx": {
+          "name": "sort_order_idx",
+          "columns": [
+            "sort_order"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "book_images_book_id_books_table_id_fk": {
+          "name": "book_images_book_id_books_table_id_fk",
+          "tableFrom": "book_images",
+          "tableTo": "books_table",
+          "columnsFrom": [
+            "book_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "book_images_id": {
+          "name": "book_images_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
     "book_questions_table": {
       "name": "book_questions_table",
       "columns": {
@@ -219,8 +334,22 @@
           "notNull": false,
           "autoincrement": false
         },
+        "cover_id": {
+          "name": "cover_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "file_url": {
           "name": "file_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "file_id": {
+          "name": "file_id",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
@@ -611,6 +740,13 @@
         },
         "attachment_url": {
           "name": "attachment_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "attachment_id": {
+          "name": "attachment_id",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
@@ -1057,7 +1193,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "DATE_ADD(NOW(), INTERVAL 30 DAY)"
+          "default": "(DATE_ADD(NOW(), INTERVAL 30 DAY))"
         },
         "is_active": {
           "name": "is_active",
@@ -1295,6 +1431,13 @@
         },
         "download_url": {
           "name": "download_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "download_id": {
+          "name": "download_id",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
@@ -1762,6 +1905,13 @@
         },
         "avatar": {
           "name": "avatar",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "avatar_id": {
+          "name": "avatar_id",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,

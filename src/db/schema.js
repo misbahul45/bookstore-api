@@ -302,19 +302,20 @@ export const chatMessages = mysqlTable('chat_messages_table', {
 // ✅ Discounts Table
 export const discounts = mysqlTable('discounts_table', {
   id: varchar('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
-  code: varchar('code', { length: 50 }).notNull().unique(), // Discount code
-  type: varchar('type', { length: 20 }).notNull(), // 'percentage' | 'fixed'
-  value: float('value').notNull(), // Discount value (e.g., percentage or fixed amount)
-  minPurchaseAmount: int('min_purchase_amount'), // Minimum purchase amount to apply discount
-  startDate: timestamp('start_date').notNull().defaultNow(), // Default ke waktu sekarang
-  endDate: timestamp('end_date').notNull().default(sql`DATE_ADD(NOW(), INTERVAL 30 DAY)`), // Default 30 hari dari sekarang
-  isActive: boolean('is_active').notNull().default(true), // Whether the discount is currently active
+  code: varchar('code', { length: 50 }).notNull().unique(),
+  type: varchar('type', { length: 20 }).notNull(),
+  value: float('value').notNull(),
+  minPurchaseAmount: int('min_purchase_amount'),
+  startDate: timestamp('start_date').notNull().defaultNow(),
+  // Add parentheses around the DATE_ADD function
+  endDate: timestamp('end_date').notNull().default(sql`(DATE_ADD(NOW(), INTERVAL 30 DAY))`),
+  isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
 }, (table) => {
   return {
-    codeIdx: index('code_idx').on(table.code), // Index on the discount code for faster lookups
-    activeIdx: index('active_idx').on(table.isActive), // Index to quickly filter active discounts
+    codeIdx: index('code_idx').on(table.code),
+    activeIdx: index('active_idx').on(table.isActive),
   }
 });
 

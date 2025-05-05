@@ -1,3 +1,16 @@
+CREATE TABLE `book_images` (
+	`id` varchar(36) NOT NULL DEFAULT (UUID()),
+	`book_id` varchar(36) NOT NULL,
+	`image_url` varchar(255) NOT NULL,
+	`image_id` varchar(255) NOT NULL,
+	`caption` varchar(255),
+	`is_featured` boolean DEFAULT false,
+	`sort_order` int DEFAULT 0,
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`updated_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `book_images_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
 CREATE TABLE `book_questions_table` (
 	`id` varchar(36) NOT NULL DEFAULT (UUID()),
 	`book_id` varchar(36) NOT NULL,
@@ -21,7 +34,9 @@ CREATE TABLE `books_table` (
 	`caption` text,
 	`description` text,
 	`image` varchar(255),
+	`cover_id` varchar(255),
 	`file_url` varchar(255),
+	`file_id` varchar(255),
 	`price` int NOT NULL,
 	`stock` int NOT NULL DEFAULT 0,
 	`type` varchar(20) NOT NULL,
@@ -67,6 +82,7 @@ CREATE TABLE `chat_messages_table` (
 	`message` text NOT NULL,
 	`is_read` boolean NOT NULL DEFAULT false,
 	`attachment_url` varchar(255),
+	`attachment_id` varchar(255),
 	`attachment_type` varchar(50),
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	CONSTRAINT `chat_messages_table_id` PRIMARY KEY(`id`)
@@ -104,7 +120,7 @@ CREATE TABLE `discounts_table` (
 	`value` float NOT NULL,
 	`min_purchase_amount` int,
 	`start_date` timestamp NOT NULL DEFAULT (now()),
-	`end_date` timestamp NOT NULL DEFAULT DATE_ADD(NOW(), INTERVAL 30 DAY),
+	`end_date` timestamp NOT NULL DEFAULT (DATE_ADD(NOW(), INTERVAL 30 DAY)),
 	`is_active` boolean NOT NULL DEFAULT true,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
@@ -135,6 +151,7 @@ CREATE TABLE `order_items_table` (
 	`price` int NOT NULL,
 	`type` varchar(20) NOT NULL,
 	`download_url` varchar(255),
+	`download_id` varchar(255),
 	`download_count` int DEFAULT 0,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	CONSTRAINT `order_items_table_id` PRIMARY KEY(`id`)
@@ -188,6 +205,7 @@ CREATE TABLE `users_table` (
 	`email` varchar(255) NOT NULL,
 	`password` varchar(255) NOT NULL,
 	`avatar` varchar(255),
+	`avatar_id` varchar(255),
 	`refresh_token` varchar(512),
 	`role` varchar(20) NOT NULL DEFAULT 'user',
 	`otp` varchar(255),
@@ -208,6 +226,7 @@ CREATE TABLE `wishlist_table` (
 	CONSTRAINT `wishlist_table_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
+ALTER TABLE `book_images` ADD CONSTRAINT `book_images_book_id_books_table_id_fk` FOREIGN KEY (`book_id`) REFERENCES `books_table`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `book_questions_table` ADD CONSTRAINT `book_questions_table_book_id_books_table_id_fk` FOREIGN KEY (`book_id`) REFERENCES `books_table`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `book_questions_table` ADD CONSTRAINT `book_questions_table_asker_id_users_table_id_fk` FOREIGN KEY (`asker_id`) REFERENCES `users_table`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `book_questions_table` ADD CONSTRAINT `book_questions_table_seller_id_users_table_id_fk` FOREIGN KEY (`seller_id`) REFERENCES `users_table`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -235,6 +254,8 @@ ALTER TABLE `reviews_table` ADD CONSTRAINT `reviews_table_user_id_users_table_id
 ALTER TABLE `transactions_table` ADD CONSTRAINT `transactions_table_order_id_orders_table_id_fk` FOREIGN KEY (`order_id`) REFERENCES `orders_table`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `wishlist_table` ADD CONSTRAINT `wishlist_table_user_id_users_table_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users_table`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `wishlist_table` ADD CONSTRAINT `wishlist_table_book_id_books_table_id_fk` FOREIGN KEY (`book_id`) REFERENCES `books_table`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX `book_id_idx` ON `book_images` (`book_id`);--> statement-breakpoint
+CREATE INDEX `sort_order_idx` ON `book_images` (`sort_order`);--> statement-breakpoint
 CREATE INDEX `book_idx` ON `book_questions_table` (`book_id`);--> statement-breakpoint
 CREATE INDEX `asker_idx` ON `book_questions_table` (`asker_id`);--> statement-breakpoint
 CREATE INDEX `seller_idx` ON `book_questions_table` (`seller_id`);--> statement-breakpoint
