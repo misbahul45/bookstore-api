@@ -129,7 +129,7 @@ export class AuthController {
       if(user.length==0){
         throw new AppError("User not found", 404);
       }
-      const isExpired= user[0].updatedAt-10 < new Date();
+      const isExpired=new Date(user[0].updatedAt.getTime()+10 * 60 * 1000) > new Date();
       if(isExpired){
         throw new AppError("OTP expired", 401);
       } 
