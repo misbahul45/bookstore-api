@@ -61,7 +61,7 @@ app.use((req, _, next) => {
 app.use(errorHandler)
 
 
-server.listen(PORT,() => {
+server.listen(PORT,'0.0.0.0',() => {
   console.log(`Server is running on port ${PORT}`);
 });
 

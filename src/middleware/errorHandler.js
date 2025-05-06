@@ -30,7 +30,6 @@ export const errorHandler = (err, req, res, next) => {
         const fieldName = err.message.match(/for key '(.+?)'/)?.[1];
         return res.status(409).json({
             status: 409,
-            success: false,
             message: "Duplicate entry",
             errors: {
                 field: fieldName,

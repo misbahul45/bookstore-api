@@ -54,7 +54,7 @@ export class UsersController{
 
     static async getUserById(id){
         try{
-            await UsersSchema.getUserById.safeParseAsync({ id });
+            await UsersSchema.getUser.safeParseAsync({ id });
             
             const user=await db.select().from(users).where({id});
             if(user.length===0){
@@ -73,9 +73,10 @@ export class UsersController{
 
     static async updateUser(id, data){
         try{
-            await UsersSchema.updateUser.safeParseAsync({ ...data });
+            await UsersSchema.update.safeParseAsync({...data})
 
-            data.password = hashText(data.password);
+            if(data.password) data.password = hashText(data.password);
+
             const user=await db.update(users).set(data).where({id});
             if(user.length===0){
                 throw new AppError("User not found", 404);
@@ -94,7 +95,12 @@ export class UsersController{
         try{
             await UsersSchema.deleteUser.safeParseAsync({ id });
 
-            
+            const { userId }=req.user;
+
+            if(userId!==id){
+                throw new AppError('Invalid credentials', 400)
+            }
+
             const user=await db.delete(users).where({id});
             if(user.length===0){
                 throw new AppError("User not found", 404);
