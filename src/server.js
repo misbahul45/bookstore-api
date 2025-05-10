@@ -5,7 +5,7 @@ import BookRouter from './routers/BookRouter.js';
 import { AppError, errorHandler } from './middleware/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import UploadRouter from './routers/UploadRouter.js';
-import { setupCors } from './lib/utils.js';
+import { print, setupCors } from './lib/utils.js';
 import notification from './sockets/NotificationSocket.js';
 import http from 'http';
 import swaggerUi from 'swagger-ui-express';
@@ -59,6 +59,10 @@ app.use((req, _, next) => {
   }
 })
 app.use(errorHandler)
+
+
+
+app._router.stack.forEach(print.bind(null, []))
 
 
 server.listen(PORT,'0.0.0.0',() => {
