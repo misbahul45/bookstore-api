@@ -12,6 +12,7 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './lib/swagger.js';
 import fileUpload from 'express-fileupload';
 import UsersRouter from './routers/UsersRouter.js';
+import CategoryRouter from './routers/CategoryRouter.js';
 
 
 const app = express();
@@ -36,6 +37,7 @@ app.get('/api', (req, res, next) => {
 });
 app.use('/api/auth', AuthRouter);
 app.use('/api/users', UsersRouter);
+app.use('/api/categories', CategoryRouter)
 app.use('/api/books', BookRouter);
 app.use('/api/uploads', UploadRouter);
 

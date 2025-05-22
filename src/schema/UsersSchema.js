@@ -15,7 +15,7 @@ export class UsersSchema {
         role: z.enum(['admin', 'user']).default('user').optional(),
         password:z.string().min(8,{ message: "Password must be at least 8 characters long"}).optional(),
         avatar:z.string().url({ message: "Invalid URL" }).optional(),
-        avatarId:z.string().min(1),
+        avatarId:z.string().min(1).optional(),
         isVerived:z.boolean().optional(),
         isActive:z.boolean().optional()
     });
