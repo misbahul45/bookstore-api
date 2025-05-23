@@ -25,7 +25,6 @@ export const authenticateAdmin = async (req, res, next) => {
         const { userId }=req.user;
         const [user] = await db.select().from(users).where({ id: userId });
 
-
         if (!user) {
             throw new AppError("Unauthorized", 401);
         }
